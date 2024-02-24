@@ -30,7 +30,7 @@ public class Plateforme : MonoBehaviour
         if (props != null)
         {
             estSurPlateforme = true;
-            Debug.Log("detection automatique " + props.detectionAutomatique);
+            //Debug.Log("detection automatique " + props.detectionAutomatique);
             if (props.detectionAutomatique)
             {
                 if (props.estCorrect)

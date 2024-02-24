@@ -18,7 +18,7 @@ public class GestionPneus : MonoBehaviour
     [SerializeField] public bool estCorrect;
     [SerializeField] public bool detectionAutomatique;
     public static Dictionary<GameObject, bool> dict;
-    public GameObject Keyboard;
+    public NonNativeKeyboard Keyboard;
     private bool dejaAppuye = false;
     private bool isChronoRunning;
     float temps;
@@ -27,13 +27,14 @@ public class GestionPneus : MonoBehaviour
     // Liste qui garde les temps
     public List<float> tempsList = new List<float>();
 
-    private string filePath = "C:\\Users\\thquentel\\Documents\\temps.txt";
+    private string filePath;
 
 
     void Start()
     {
+        filePath = Application.streamingAssetsPath + @"\" + "temps.txt";
         dict = new Dictionary<GameObject, bool>();
-        EventManager.StartListening("nomAffichage", nomAffichage);
+        //EventManager.StartListening("nomAffichage", nomAffichage);
         //GenererPneusEtDemarrerChronometre();
     }
 
@@ -66,14 +67,14 @@ public class GestionPneus : MonoBehaviour
             // Initialisation des propriétés du pneu de façon aléatoire (50% de chance à chaque fois)
             estCorrect = UnityEngine.Random.Range(0, 2) == 1;
             detectionAutomatique = UnityEngine.Random.Range(0, 2) == 1;
-            dict[nouveauPneu] = false;
+            dict.Add(nouveauPneu, false);
 
             // Application des propriétés au pneu
             nouveauPneu.GetComponent<InitialisationPneu>().InitialiserPneu(estCorrect, detectionAutomatique);
 
             nouveauPneu.tag = "Pneu";
 
-            yield return new WaitForSeconds(1f); // Délai de 2 secondes entre chaque instantiation
+            yield return new WaitForSeconds(1f); // Délai de 1 secondes entre chaque instantiation
         }
     }
 
@@ -94,6 +95,8 @@ public class GestionPneus : MonoBehaviour
         {
             Destroy(pneu);
         }
+
+        dict = new Dictionary<GameObject, bool>();
         dejaAppuye = false;
         temps = 0;
     }
@@ -105,12 +108,12 @@ public class GestionPneus : MonoBehaviour
         bool res = true;
         foreach ((GameObject G, bool B) in dict)
         {
+            Debug.Log(G + " " + B);
             if (!B)
             {
                 res = false ;
                 break;
             }
-            Debug.Log("Nom autre script " + G.name + " Correct : " + B);
         }
         Debug.Log(res);
         if (res)
@@ -120,10 +123,10 @@ public class GestionPneus : MonoBehaviour
 
             tempsList.Add(temps);
            
-            Keyboard.SetActive(true);
+            Keyboard.OnTextSubmitted += nomAffichage;
+            Keyboard.PresentKeyboard();
+            Keyboard.gameObject.SetActive(true);
             Debug.Log("chrono stop");
-           
-
         }
     }
 
@@ -134,13 +137,16 @@ public class GestionPneus : MonoBehaviour
 
         using (StreamWriter writer = new StreamWriter(filePath, append: true))
         {
+            
+            writer.WriteLine(nomPerso);
+            writer.WriteLine(temps.ToString());
+            /*
             tempsList.Sort();
             foreach (float temps in tempsList)
             {
-
                 writer.WriteLine(nomPerso);
                 writer.WriteLine(temps.ToString());
-            }
+            }*/
         }
     }
 
@@ -153,21 +159,18 @@ public class GestionPneus : MonoBehaviour
         return string.Format("{0:D2}:{1:D2}:{2:D3}", timeSpan.Minutes, timeSpan.Seconds, timeSpan.Milliseconds);
     }
 
-    private void nomAffichage(EventParam e)
+    private void nomAffichage(object sender, EventArgs eventArgs)
     {
-        EventParamString eventParamString = (EventParamString)e;
-        nomPerso = eventParamString.NomPerso;
+        nomPerso = Keyboard.InputField.text;
         SaveDataToFile(filePath);
+        DetruirePneusExistants();
         using (StreamReader reader = new StreamReader(filePath))
         {
-  
                 string line = reader.ReadToEnd();
                 restext.text = line;
                 Debug.Log(line);
-
-            
-
         }
-
+        
+        Keyboard.OnTextSubmitted -= nomAffichage;
     }
 }

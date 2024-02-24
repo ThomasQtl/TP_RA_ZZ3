@@ -405,6 +405,7 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.UI
         /// </summary>
         public void PresentKeyboard()
         {
+            Debug.Log("oui56");
             ResetClosingTime();
             gameObject.SetActive(true);
             ActivateSpecificKeyboard(LayoutType.Alpha);
@@ -797,10 +798,8 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.UI
             if (SubmitOnEnter)
             {
                 // Send text entered event and close the keyboard
+                Debug.Log("oui");
                 OnTextSubmitted?.Invoke(this, EventArgs.Empty);
-                EventParamString eventParamString = new EventParamString();
-                eventParamString.NomPerso = InputField.text;
-                EventManager.TriggerEvent("nomAffichage", eventParamString);
                 Close();
             }
             else

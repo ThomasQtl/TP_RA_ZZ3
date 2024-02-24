@@ -29,18 +29,23 @@ public class BenneVerte : MonoBehaviour
                 GestionPneus.dict[other.gameObject] = true;
                 Debug.Log("Nom " + other.gameObject.name + " Correct : " + props.estCorrect);
             }
+
+            gp.DernierPneu();
         }
 
-
-        gp.DernierPneu();
 
     }
 
     private void OnTriggerExit(Collider other)
     {
-        GestionPneus.dict[other.gameObject] = false;
-        gp.DernierPneu();
-        Debug.Log("bonne benne sortie");
+        
+        InitialisationPneu props = other.gameObject.GetComponent<InitialisationPneu>();
+        if (props != null)
+        {
+            GestionPneus.dict[other.gameObject] = false;
+        }
+        //gp.DernierPneu();
+        //Debug.Log("bonne benne sortie");
     }
 }
 
