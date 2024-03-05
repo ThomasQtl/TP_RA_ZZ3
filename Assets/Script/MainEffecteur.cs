@@ -99,7 +99,7 @@ public class MainEffecteur: MonoBehaviour
     {
         nomPerso = Keyboard.InputField.text;
         SaveDataToFile(filePath);
-        DetruirePneusExistants();
+        //DetruirePneusExistants();
         using (StreamReader reader = new StreamReader(filePath))
         {
                 string line = reader.ReadToEnd();

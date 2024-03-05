@@ -11,6 +11,9 @@ TagManager:
   - Light1
   - Pneu
   - PlateformeDetection
+  - depart
+  - ligne
+  - arrive
   layers:
   - Default
   - TransparentFX
